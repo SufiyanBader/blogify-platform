@@ -9,7 +9,7 @@ const app = express();
 app.use(express.json());
 
 const redis = new Redis(process.env.REDIS_URL || 'redis://redis:6379');
-const FEED_CACHE_TTL = 30; // seconds
+const FEED_CACHE_TTL = 60; // seconds
 
 let dbReady = false;
 initSchema()
