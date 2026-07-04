@@ -139,3 +139,4 @@ app.delete('/posts/:id', requireAuth, async (req, res) => {
 const PORT = process.env.PORT || 4002;
 app.listen(PORT, () => console.log(`Posts service v${process.env.APP_VERSION || '1.0.0'} on port ${PORT}`));
 
+
