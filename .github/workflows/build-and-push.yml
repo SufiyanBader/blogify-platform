@@ -76,15 +76,10 @@ jobs:
         run: echo "short_sha=$(echo ${GITHUB_SHA} | cut -c1-7)" >> "$GITHUB_OUTPUT"
 
       - name: Dispatch deploy event to blogify-infra
-        uses: peter-evans/repository-dispatch@v3
-        with:
-          token: ${{ secrets.INFRA_REPO_PAT }}
-          repository: ${{ secrets.INFRA_REPO_OWNER }}/blogify-infra
-          event-type: deploy-services
-          client-payload: |
-            {
-              "image_tag": "${{ steps.sha.outputs.short_sha }}",
-              "services": ${{ needs.detect-changes.outputs.services }},
-              "triggered_by": "${{ github.actor }}",
-              "commit_sha": "${{ github.sha }}"
-            }
+        run: |
+          curl -X POST \
+            -H "Accept: application/vnd.github.v3+json" \
+            -H "Authorization: token ${{ secrets.INFRA_REPO_PAT }}" \
+            https://api.github.com/repos/${{ secrets.INFRA_REPO_OWNER }}/blogify-infra/dispatches \
+            -d "{\"event_type\":\"deploy-services\",\"client_payload\":{\"image_tag\":\"${{ steps.sha.outputs.short_sha }}\",\"services\":${{ needs.detect-changes.outputs.services }},\"triggered_by\":\"${{ github.actor }}\",\"commit_sha\":\"${{ github.sha }}\"}}"
+          echo "Dispatch sent"
